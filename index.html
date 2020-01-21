@@ -9,6 +9,7 @@
                 <a class="navbar-brand" href="/">
                     <span class="navbar-brand mb-0 h1">Sample Dapp</span>
                 </a>
+                <span id='web3_version'></span>
                 <div class="my-2 my-sm-0">
                     <button class="btn btn-primary" id="login_button" type="button">Login web3</button>
                     <button class="btn btn-outline-danger" id="logout_button" type="button">Logout web3</button>
@@ -17,8 +18,8 @@
             <br />
             <div class="card">
                 <div class="card-body">
-                    <span>window.ethereum enable: </span>
-                    <span id='ethereum_enable'></span>
+                    <h5>Login Status</h5>
+                    <span id='ethereum_enable'>---</span>
                 </div>
             </div>
             <div class="card-group">
@@ -42,9 +43,8 @@
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">netwrok Type / Id</h5>
-                        <span id='web3_netType'>---</span>                        
-                        <span>/</span>
+                        <h5 class="card-title">Network Id</h5>
+                        <!-- <span id='web3_netType'>---</span> -->
                         <span id='web3_netId'>---</span>
                     </div>
                 </div>
@@ -149,12 +149,20 @@
 </script>
 
 <script>
+web3 = new Web3(web3.currentProvider);
+
+// Get web3 version
+$('#web3_version').html(`web3 v${web3.version.api}`);
+
 // Web3 Login
 $("#login_button").click(() => {
-    window.ethereum.enable().then(() => {
+    window.ethereum.enable().then((result) => {
+        // console.debug(result);
+
         $("#login_button").hide();
 
         $("#ethereum_enable").html('SUCCESSED').addClass('badge badge-success');
+
         $("#web3_defaultAccount").html(web3.eth.defaultAccount);
 
         web3.eth.getCoinbase((err, account) => {
@@ -164,15 +172,18 @@ $("#login_button").click(() => {
         web3.eth.getAccounts((err, accounts) => {
             $('#web3_accounts').html(accounts);
         })
-        // web3.eth.net.getId().then(id => {
-        //     $("#web3_netId").html(id);
-        // })
-        // web3.eth.net.getNetworkType().then(type => {
+
+        web3.version.getNetwork((err, id) => {
+            $("#web3_netId").html(id);
+        })
+
+        // web3.eth.net.getNetworkType((err, type) => {
         //     $("#web3_netType").html(type);
         // });
 
     }).catch((e) => {
         $("#ethereum_enable").html('FAILED').addClass('badge badge-danger');
+        console.error(e);
     });
 });
 
@@ -187,16 +198,18 @@ $("#logout_button").click(() => {
         });
     }
 });
+
 // Web3 Sign
 $("#web3_sign_button").click(() => {
     const signMessage = $('#sign_input').val();
     if(!(web3 && web3.eth && web3.eth.defaultAccount)) {
         alert("No accounts exposed!");
     } else {
-        web3.eth.sign(signMessage, web3.eth.defaultAccount, (err, result) => {
+        web3.eth.sign(web3.eth.defaultAccount, web3.sha3(signMessage), (err, result) => {
             if(err) {
                 alert('You cancel the signature request.');
             }
+            console.debug(result);
             $('#web3_sign_result').html(result);
         });
     }
