@@ -12,7 +12,12 @@
                     <span class="navbar-brand mb-0 h1">Ethereum Sample Dapp</span>
                 </a>
                 <div class="my-2 my-sm-0">
-                    <button class="btn btn-primary" id="login_button" type="button" data-toggle="tooltip" data-placement="bottom" title="window.ethereum.enable()">Login</button>
+                    <button class="btn btn-primary" id="login_button" type="button" data-toggle="tooltip" data-placement="bottom" title="window.ethereum.enable()">
+                        Login
+                    </button>
+                    <button class="btn btn-success" id="login_button_new" type="button" data-toggle="tooltip" data-placement="bottom" title="ethereum.request({ method: 'eth_requestAccounts' })">
+                        Login New
+                    </button>
                     <!-- <button class="btn btn-outline-danger" id="logout_button" type="button">Logout (Wallet Connect)</button> -->
                 </div>
             </nav>
@@ -66,7 +71,21 @@
             <br />
             <div class="card">
                 <div class="card-header">
-                    Get Account
+                    Get Account and Network
+                </div>
+                <div class="card-group">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Return Account</h5>
+                            <span id='return_account'>---</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">ethereum.request({ method: 'eth_accounts' })</h5>
+                            <span id='ethereum_request_account'>---</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-group">
                     <div class="card">
@@ -87,6 +106,8 @@
                             <span id='web3_coinbase'>---</span>
                         </div>
                     </div>
+                </div>
+                <div class="card-group">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">web3.version.getNetwork()</h5>
@@ -243,29 +264,28 @@ if(web3.currentProvider) {
 
 // Web3 Login
 $("#login_button").click(() => {
-    window.ethereum.enable().then((result) => {
+    window.ethereum.enable().then((accounts) => {
+        $('#return_account').html(accounts[0]);
+
         $("#login_button").html('Login Succeed').addClass('disabled');
 
-        $("#web3_defaultAccount").html(web3.eth.defaultAccount);
-
-        web3.eth.getCoinbase((err, account) => {
-            $('#web3_coinbase').html(account);
-        })
-
-        web3.eth.getAccounts((err, accounts) => {
-            $('#web3_accounts').html(accounts);
-        })
-
-        web3.version.getNetwork((err, id) => {
-            $("#web3_netId").html(id);
-        })
-
-        // web3.eth.net.getNetworkType((err, type) => {
-        //     $("#web3_netType").html(type);
-        // });
-
+        getAccountAndNetwork();
     }).catch((e) => {
-        $("#ethereum_enable").html('FAILED').addClass('badge badge-danger');
+        alert('No wallet detected!');
+        console.error(e);
+    });
+});
+
+$("#login_button_new").click(() => {
+    ethereum.request({ method: 'eth_requestAccounts' })
+    .then((accounts) => {
+        $("#login_button_new").html('Login Succeed').addClass('disabled');
+
+        $('#return_account').html(accounts[0]);
+
+        getAccountAndNetwork();
+    }).catch((e) => {
+        alert('No wallet detected!');
         console.error(e);
     });
 });
@@ -332,4 +352,26 @@ $("#web3_send_tx_button").click(() => {
         alert(err);
     });
 });
+
+const getAccountAndNetwork = function() {
+    $("#web3_defaultAccount").html(web3.eth.defaultAccount);
+
+    web3.eth.getCoinbase((err, account) => {
+        $('#web3_coinbase').html(account);
+    })
+
+    web3.eth.getAccounts((err, accounts) => {
+        $('#web3_accounts').html(accounts);
+    })
+
+    web3.version.getNetwork((err, id) => {
+        $("#web3_netId").html(id);
+    })
+
+    ethereum.request({ method: 'eth_accounts' })
+    .then((accounts) => {
+        $("#ethereum_request_account").html(accounts[0]);
+    });
+};
+
 </script>
