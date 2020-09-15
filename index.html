@@ -166,10 +166,8 @@
                 <div class="card">
                     <div class="card-header">Send Transaction</div>
                     <div class="card-body">
-                        <h5 class="card-title">Recipient Address</h5>
-                        <textarea class="form-control" aria-label="With textarea" id="web3_send_tx_address"></textarea>
-                        <br />
-                        <h5 class="card-title">ETH Amount</h5>
+                        <h5 class="card-title">web3.eth.sendTransaction()</h5>
+                        <textarea class="form-control mb-3" aria-label="With textarea" id="web3_send_tx_address" placeholder="Destination ETH address"></textarea>
                         <div class="input-group mb-3">
                             <input
                                 id="web3_send_tx_amount"
@@ -344,17 +342,16 @@ $("#web3_send_tx_button").click(() => {
     const sendAmount = $('#web3_send_tx_amount').val();
     const WEI = 1000000000000000000;
     const transactionObject = {
-        from: web3.eth.defaultAccount,
+        from: myAccount,
         to: recipient,
-        value: (sendAmount* WEI).toString(),
+        value: (sendAmount * WEI).toString(),
         gas: 21000,
     };
-    web3.eth.sendTransaction(transactionObject)
-    .on('transactionHash', (hash) => {
-        $('#web3_tx_hash').html(hash);
-    })
-    .on('error', (err) => {
-        alert(err);
+    web3.eth.sendTransaction(transactionObject, (e, result) => {
+        if(e) {
+            alert(e.message);
+        };
+        $('#web3_tx_hash').html(result);
     });
 });
 
