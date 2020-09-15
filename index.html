@@ -12,7 +12,7 @@
                     <span class="navbar-brand mb-0 h1">Ethereum Sample Dapp</span>
                 </a>
                 <div class="my-2 my-sm-0">
-                    <button class="btn btn-primary" id="login_button" type="button">Login</button>
+                    <button class="btn btn-primary" id="login_button" type="button" data-toggle="tooltip" data-placement="bottom" title="window.ethereum.enable()">Login</button>
                     <!-- <button class="btn btn-outline-danger" id="logout_button" type="button">Logout (Wallet Connect)</button> -->
                 </div>
             </nav>
@@ -68,34 +68,28 @@
                 <div class="card-header">
                     Get Account
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h5>Login Status</h5>
-                        <span id='ethereum_enable'>---</span>
-                    </div>
-                </div>
                 <div class="card-group">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">web3 defaultAccount</h5>
+                            <h5 class="card-title">web3.eth.defaultAccount</h5>
                             <span id='web3_defaultAccount'>---</span>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">web3 accounts</h5>
+                            <h5 class="card-title">web3.eth.getAccounts()</h5>
                             <span id='web3_accounts'>---</span>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">web3 coinbase</h5>
+                            <h5 class="card-title">web3.eth.getCoinbase()</h5>
                             <span id='web3_coinbase'>---</span>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Network Id</h5>
+                            <h5 class="card-title">web3.version.getNetwork()</h5>
                             <!-- <span id='web3_netType'>---</span> -->
                             <span id='web3_netId'>---</span>
                         </div>
@@ -206,6 +200,11 @@
 </script>
 
 <script>
+// Enable tooltip
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 // web3 = new Web3(web3.currentProvider);
 
 // Get provider and web3
@@ -245,11 +244,7 @@ if(web3.currentProvider) {
 // Web3 Login
 $("#login_button").click(() => {
     window.ethereum.enable().then((result) => {
-        // console.debug(result);
-
-        $("#login_button").hide();
-
-        $("#ethereum_enable").html('SUCCESSED').addClass('badge badge-primary');
+        $("#login_button").html('Login Succeed').addClass('disabled');
 
         $("#web3_defaultAccount").html(web3.eth.defaultAccount);
 
