@@ -11,43 +11,94 @@
                 <a class="navbar-brand" href="/">
                     <span class="navbar-brand mb-0 h1">Ethereum Sample Dapp</span>
                 </a>
-                <span id='web3_version'></span>
                 <div class="my-2 my-sm-0">
-                    <button class="btn btn-primary" id="login_button" type="button">Login web3</button>
-                    <button class="btn btn-outline-danger" id="logout_button" type="button">Logout web3</button>
+                    <button class="btn btn-primary" id="login_button" type="button">Login</button>
+                    <!-- <button class="btn btn-outline-danger" id="logout_button" type="button">Logout (Wallet Connect)</button> -->
                 </div>
             </nav>
-            <br />
             <div class="card">
-                <div class="card-body">
-                    <h5>Login Status</h5>
-                    <span id='ethereum_enable'>---</span>
+                <div class="card-header">
+                    Provider and web3
+                </div>
+                <div class="card-group">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">window.ethereum</h5>
+                            <span id='window_ethereum'>---</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">window.ethereum.isMetaMask</h5>
+                            <span id='is_metamask'>---</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-group">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">window.web3</h5>
+                            <span id="window_web3">---</span>
+                            <span id='window_web3_version'></span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">window.web3.currentProvider</h5>
+                            <span id='window_web3_currentProvider'>---</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">web3</h5>
+                            <span id='web3_instance'>---</span>
+                            <span id='web3_version'></span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">web3.currentProvider</h5>
+                            <span id="web3_currentProvider">---</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-group">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">web3 defaultAccount</h5>
-                        <span id='web3_defaultAccount'>---</span>
-                    </div>
+            <br />
+            <div class="card">
+                <div class="card-header">
+                    Get Account
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">web3 accounts</h5>
-                        <span id='web3_accounts'>---</span>
+                        <h5>Login Status</h5>
+                        <span id='ethereum_enable'>---</span>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">web3 coinbase</h5>
-                        <span id='web3_coinbase'>---</span>
+                <div class="card-group">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">web3 defaultAccount</h5>
+                            <span id='web3_defaultAccount'>---</span>
+                        </div>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Network Id</h5>
-                        <!-- <span id='web3_netType'>---</span> -->
-                        <span id='web3_netId'>---</span>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">web3 accounts</h5>
+                            <span id='web3_accounts'>---</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">web3 coinbase</h5>
+                            <span id='web3_coinbase'>---</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Network Id</h5>
+                            <!-- <span id='web3_netType'>---</span> -->
+                            <span id='web3_netId'>---</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -155,10 +206,41 @@
 </script>
 
 <script>
-web3 = new Web3(web3.currentProvider);
+// web3 = new Web3(web3.currentProvider);
 
-// Get web3 version
-$('#web3_version').html(`web3 v${web3.version.api}`);
+// Get provider and web3
+if(window.ethereum) {
+    $("#window_ethereum").html('TRUE').addClass('badge badge-primary');
+} else {
+    $("#window_ethereum").html('FALSE').addClass('badge badge-danger');
+};
+if(window.ethereum.isMetaMask) {
+    $("#is_metamask").html('TRUE').addClass('badge badge-primary');
+} else {
+    $("#is_metamask").html('FALSE').addClass('badge badge-danger');
+}
+if(window.web3) {
+    $("#window_web3").html('TRUE').addClass('badge badge-primary');
+    $('#window_web3_version').html(`v${window.web3.version.api}`);
+} else {
+    $("#window_web3").html('FALSE').addClass('badge badge-danger');
+};
+if(window.web3.currentProvider) {
+    $("#window_web3_currentProvider").html('TRUE').addClass('badge badge-primary');
+} else {
+    $("#window_web3_currentProvider").html('FALSE').addClass('badge badge-danger');
+};
+if(web3) {
+    $("#web3_instance").html('TRUE').addClass('badge badge-primary');
+    $('#web3_version').html(`v${web3.version.api}`);
+} else {
+    $("#web3_instance").html('FALSE').addClass('badge badge-danger');
+};
+if(web3.currentProvider) {
+    $("#web3_currentProvider").html('TRUE').addClass('badge badge-primary');
+} else {
+    $("#web3_currentProvider").html('FALSE').addClass('badge badge-danger');
+};
 
 // Web3 Login
 $("#login_button").click(() => {
@@ -167,7 +249,7 @@ $("#login_button").click(() => {
 
         $("#login_button").hide();
 
-        $("#ethereum_enable").html('SUCCESSED').addClass('badge badge-success');
+        $("#ethereum_enable").html('SUCCESSED').addClass('badge badge-primary');
 
         $("#web3_defaultAccount").html(web3.eth.defaultAccount);
 
