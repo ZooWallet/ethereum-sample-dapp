@@ -122,6 +122,7 @@
                 <div class="card">
                     <div class="card-header">Sign Message</div>
                     <div class="card-body">
+                        <h5 class="card-title">web3.eth.sign()</h5>
                         <div class="input-group mb-3">
                             <input
                                 id="sign_input"
@@ -141,8 +142,9 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">Personal Sign Message</div>
+                    <div class="card-header">Sign Message</div>
                     <div class="card-body">
+                        <h5 class="card-title">ethereum.request({ method: 'eth_sign', params: [myAccount, message] })</h5>
                         <div class="input-group mb-3">
                             <input
                                 id="personal_sign_input"
@@ -227,6 +229,7 @@ $(function () {
 })
 
 // web3 = new Web3(web3.currentProvider);
+let myAccount = '';
 
 // Get provider and web3
 if(window.ethereum) {
@@ -265,13 +268,14 @@ if(web3.currentProvider) {
 // Web3 Login
 $("#login_button").click(() => {
     window.ethereum.enable().then((accounts) => {
-        $('#return_account').html(accounts[0]);
-
         $("#login_button").html('Login Succeed').addClass('disabled');
+
+        $('#return_account').html(accounts[0]);
+        myAccount = accounts[0];
 
         getAccountAndNetwork();
     }).catch((e) => {
-        alert('No wallet detected!');
+        // alert('No wallet detected!');
         console.error(e);
     });
 });
@@ -282,10 +286,11 @@ $("#login_button_new").click(() => {
         $("#login_button_new").html('Login Succeed').addClass('disabled');
 
         $('#return_account').html(accounts[0]);
+        myAccount = accounts[0];
 
         getAccountAndNetwork();
     }).catch((e) => {
-        alert('No wallet detected!');
+        // alert('No wallet detected!');
         console.error(e);
     });
 });
@@ -305,30 +310,30 @@ $("#logout_button").click(() => {
 // Web3 Sign
 $("#web3_sign_button").click(() => {
     const signMessage = $('#sign_input').val();
-    if(!(web3 && web3.eth && web3.eth.defaultAccount)) {
-        alert("No accounts exposed!");
+    if(!myAccount) {
+        alert("Please login first!");
     } else {
-        web3.eth.sign(web3.eth.defaultAccount, web3.sha3(signMessage), (err, result) => {
+        web3.eth.sign(myAccount, web3.sha3(signMessage), (err, result) => {
             if(err) {
-                alert('You cancel the signature request.');
+                alert(err.message);
             }
-            console.debug(result);
             $('#web3_sign_result').html(result);
         });
     }
 });
 
-// Web3 Personal Sign
+// Ethereum eth_sign
 $("#web3_personal_sign_button").click(() => {
-    const personalSignMessage = $('#personal_sign_input').val();
-    if(!(web3 && web3.eth && web3.eth.defaultAccount)) {
-        alert("No accounts exposed!");
+    const message = $('#personal_sign_input').val();
+    if(!myAccount) {
+        alert("Please login first!");
     } else {
-        web3.eth.personal.sign(personalSignMessage, web3.eth.defaultAccount, '', (err, result) => {
-            if(err) {
-                alert('You cancel the signature request');
-            }
+        ethereum.request({ method: 'eth_sign', params: [myAccount, web3.sha3(message)] })
+        .then((result) => {
             $('#web3_personal_sign_result').html(result);
+        })
+        .catch((e) => {
+            alert(e.message);
         });
     }
 });
