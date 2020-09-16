@@ -144,7 +144,7 @@
                 <div class="card">
                     <div class="card-header">Sign Message</div>
                     <div class="card-body">
-                        <h5 class="card-title">ethereum.request({ method: 'eth_sign', params: [myAccount, message] })</h5>
+                        <h5 class="card-title">ethereum.request({ method: 'eth_sign' })</h5>
                         <div class="input-group mb-3">
                             <input
                                 id="personal_sign_input"
@@ -163,6 +163,9 @@
                         <span id='web3_personal_sign_result'></span>
                     </div>
                 </div>
+            </div>
+            <br>
+            <div class="card-deck">
                 <div class="card">
                     <div class="card-header">Send Transaction</div>
                     <div class="card-body">
@@ -189,6 +192,34 @@
                     <div class="card-footer text-muted">
                         <span>Transaction Hash: </span>
                         <span id='web3_tx_hash'></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Send Transaction</div>
+                    <div class="card-body">
+                        <h5 class="card-title">ethereum.request({ method: 'eth_sendTransaction' })</h5>
+                        <textarea class="form-control mb-3" aria-label="With textarea" id="ethereum_send_tx_address" placeholder="Destination ETH address"></textarea>
+                        <div class="input-group mb-3">
+                            <input
+                                id="ethereum_send_tx_amount"
+                                type="text"
+                                class="form-control"
+                                placeholder="ETH send amount"
+                                aria-label="ETH send amount"
+                                aria-describedby="ethereum_send_tx_button">
+                            <div class="input-group-append">
+                                <button
+                                    class="btn btn-primary"
+                                    type="button"
+                                    id="ethereum_send_tx_button">
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <span>Transaction Hash: </span>
+                        <span id='ethereum_tx_hash'></span>
                     </div>
                 </div>
             </div>
@@ -219,6 +250,7 @@
     integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
     crossorigin="anonymous">
 </script>
+<script src="/static/ethers.js"></script>
 
 <script>
 // Enable tooltip
@@ -226,7 +258,6 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 
-// web3 = new Web3(web3.currentProvider);
 let myAccount = '';
 
 // Get provider and web3
@@ -347,12 +378,40 @@ $("#web3_send_tx_button").click(() => {
         value: (sendAmount * WEI).toString(),
         gas: 21000,
     };
-    web3.eth.sendTransaction(transactionObject, (e, result) => {
-        if(e) {
+    if(!myAccount) {
+        alert("Please login first!");
+    } else {
+        web3.eth.sendTransaction(transactionObject, (e, result) => {
+            if(e) {
+                alert(e.message);
+            };
+            $('#web3_tx_hash').html(result);
+        });
+    }
+});
+
+// Ethereum Send Transaction
+$("#ethereum_send_tx_button").click(() => {
+    const recipient = $('#ethereum_send_tx_address').val();
+    const sendAmount = $('#ethereum_send_tx_amount').val();
+    const WEI = 1000000000000000000;
+    const transactionObject = {
+        from: myAccount,
+        to: recipient,
+        value: ethers.utils.hexValue(sendAmount * WEI),
+        gas: '21000',
+    };
+    if(!myAccount) {
+        alert("Please login first!");
+    } else {
+        ethereum.request({ method: 'eth_sendTransaction', params: [transactionObject] })
+        .then((result) => {
+            $('#ethereum_tx_hash').html(result);
+        })
+        .catch((e) => {
             alert(e.message);
-        };
-        $('#web3_tx_hash').html(result);
-    });
+        });
+    }
 });
 
 const getAccountAndNetwork = function() {
